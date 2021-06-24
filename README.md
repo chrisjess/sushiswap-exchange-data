@@ -1,5 +1,7 @@
 Sushiswap AMM Exchange data. Reduced scope to ensure faster indexing.
 
+{ pairs( first: 1, ) { reserveUSD totalSupply reserveETH } }
+
 # QuickSwap Subgraph
 
 This repository has been forked from [UniswapV2]()

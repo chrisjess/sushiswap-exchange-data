@@ -11,7 +11,7 @@ import {
   Bundle
 } from '../types/schema'
 import { Pair as PairContract, Mint, Burn, Swap, Transfer, Sync } from '../types/templates/Pair/Pair'
-import { updatePairDayData, updateTokenDayData, updateUniswapDayData } from './dayUpdates'
+import { updatePairDayData, updateTokenDayData } from './dayUpdates'
 import { getEthPriceInUSD, findEthPerToken, getTrackedVolumeUSD, getTrackedLiquidityUSD } from './pricing'
 import {
   convertTokenToDecimal,
@@ -322,11 +322,9 @@ export function handleMint(event: Mint): void {
 
   // update day entities
   let dpd = updatePairDayData(pair as Pair, event)
-  let udd = updateUniswapDayData(uniswap as UniswapFactory, event)
   let tdd0 = updateTokenDayData(token0 as Token, event, bundle as Bundle)
   let tdd1 = updateTokenDayData(token1 as Token, event, bundle as Bundle)
   dpd.save()
-  udd.save()
   tdd0.save()
   tdd1.save()
 }
@@ -387,11 +385,9 @@ export function handleBurn(event: Burn): void {
 
   // update day entities
   let dpd = updatePairDayData(pair as Pair, event)
-  let udd = updateUniswapDayData(uniswap as UniswapFactory, event)
   let tdd0 = updateTokenDayData(token0 as Token, event, bundle as Bundle)
   let tdd1 = updateTokenDayData(token1 as Token, event, bundle as Bundle)
   dpd.save()
-  udd.save()
   tdd0.save()
   tdd1.save()
 }
@@ -508,15 +504,9 @@ export function handleSwap(event: Swap): void {
 
   // update day entities
   let pairDayData = updatePairDayData(pair as Pair, event)
-  let uniswapDayData = updateUniswapDayData(uniswap as UniswapFactory, event)
   let token0DayData = updateTokenDayData(token0 as Token, event, bundle as Bundle)
   let token1DayData = updateTokenDayData(token1 as Token, event, bundle as Bundle)
 
-  // swap specific updating
-  uniswapDayData.dailyVolumeUSD = uniswapDayData.dailyVolumeUSD.plus(trackedAmountUSD)
-  uniswapDayData.dailyVolumeETH = uniswapDayData.dailyVolumeETH.plus(trackedAmountETH)
-  uniswapDayData.dailyVolumeUntracked = uniswapDayData.dailyVolumeUntracked.plus(derivedAmountUSD)
-  uniswapDayData.save()
 
   // swap specific updating for pair
   pairDayData.dailyVolumeToken0 = pairDayData.dailyVolumeToken0.plus(amount0Total)
